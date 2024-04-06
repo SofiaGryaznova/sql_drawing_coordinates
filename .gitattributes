@@ -1,2 +1,74 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+import turtle
+import sqlite3
+
+conn = sqlite3.connect("SQL_coordinates.db")
+cursor = conn.cursor()
+
+
+def create_table_coordinates():
+    cursor.execute("""
+          CREATE TABLE IF NOT EXISTS coordinates
+          (x1 INTEGER,
+           y1 INTEGER,
+           x2 INTEGER,
+           y2 INTEGER)
+    """)
+    conn.commit()
+
+
+def add_coordinates_and_draw(x1, y1, x2, y2):
+    cursor.execute("""INSERT INTO coordinates VALUES (?,?,?,?)""", (x1, y1, x2, y2))
+    conn.commit()
+    turtle.Turtle()
+    turtle.Screen()
+    turtle.penup()
+    turtle.goto(x1, y1)
+    turtle.pendown()
+    turtle.goto(x2, y2)
+    turtle.done()
+    print("Добавление координат успешно, отрисовка завершена")
+
+
+def update_coordinates_and_draw(x1, y1, x2, y2):
+    cursor.execute("""UPDATE coordinates SET x1=?, y1=?, x2=?, y2=?""", (x1, y1, x2, y2))
+    conn.commit()
+    turtle.Turtle()
+    turtle.Screen()
+    turtle.penup()
+    turtle.goto(x1, y1)
+    turtle.pendown()
+    turtle.goto(x2, y2)
+    turtle.done()
+    print("Координаты обновлены успешно, отрисовка завершена")
+
+
+def main():
+    create_table_coordinates()
+    while True:
+        print("1.Внести координаты и отрисовать линию")
+        print("2.Обновить координаты и отрисовать линию")
+        print("3.Выход")
+        choice = input("Выберите действие(1-3):")
+        if choice == "1":
+            x1 = int(input("Введите координату x1 в виде целого числа"))
+            y1 = int(input("Введите координату y1 в виде целого числа"))
+            x2 = int(input("Введите координату x2 в виде целого числа"))
+            y2 = int(input("Введите координату y2 в виде целого числа"))
+            add_coordinates_and_draw(x1, y1, x2, y2)
+        elif choice == "2":
+            x1 = int(input("Введите новую координату x1 в виде целого числа"))
+            y1 = int(input("Введите новую координату y1 в виде целого числа"))
+            x2 = int(input("Введите новую координату x2 в виде целого числа"))
+            y2 = int(input("Введите новую координату y2 в виде целого числа"))
+            update_coordinates_and_draw(x1, y1, x2, y2)
+        elif choice == "3":
+            break
+        else:
+            print("Неверный выбор, повторите попытку")
+
+
+if __name__ == "__main__":
+    main()
+    conn.close()
